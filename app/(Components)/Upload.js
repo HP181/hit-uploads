@@ -1,8 +1,9 @@
 'use client';
+ 
 import { upload } from '@vercel/blob/client';
 import { useState, useRef } from 'react';
-
- const Upload = () =>  {
+ 
+export default function AvatarUploadPage() {
   const inputFileRef = useRef(null);
   const [blob, setBlob] = useState(null);
   return (
@@ -15,12 +16,23 @@ import { useState, useRef } from 'react';
  
           const file = inputFileRef.current.files[0];
  
-          const newBlob = await upload(file.name, file, {
-            access: 'public',
-            handleUploadUrl: '/api/avatar/upload',
-          });
+          const formData = new FormData();
+          formData.append('file', file); // Attach file to formData
+
+          const a = await fetch("/api/upload", {
+            method : "POST",
+            body : formData
+          })
+
+          // if (!a.ok) throw new Error('Failed to upload file.');
+
+          
+          console.log("a", a);
+
+          const b = await a.json();
+          console.log("b", b);
  
-          setBlob(newBlob);
+          setBlob(a);
         }}
       >
         <input name="file" ref={inputFileRef} type="file" required />
@@ -34,5 +46,3 @@ import { useState, useRef } from 'react';
     </>
   );
 }
-
-export default Upload;
